@@ -5,12 +5,10 @@ package edu.purdue.kroppt.chatbot;
  */
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.List;
 class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
     private TextView chatText;
-    private List<ChatMessage> chatMessageList = new ArrayList<ChatMessage>();
+    private List<ChatMessage> chatMessageList = new ArrayList<>();
     private Context context;
 
     @Override
