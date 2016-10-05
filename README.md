@@ -1,4 +1,4 @@
-# Android Chat Box using api.ai
+# Android Chat Bot using api.ai
 
 Chat with a bot that utilizes api.ai.
 
