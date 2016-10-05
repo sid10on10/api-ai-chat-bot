@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean sendChatMessage() {
+        if (chatText.getText().length() == 0)
+            return false;
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
         side = !side;
