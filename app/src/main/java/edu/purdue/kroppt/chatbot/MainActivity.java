@@ -13,20 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.google.gson.JsonElement;
-
-import java.util.Map;
-import java.util.zip.Inflater;
 
 import ai.api.AIConfiguration;
 import ai.api.AIListener;
@@ -49,8 +41,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private Animation pop_in_anim;
     private Animation pop_out_anim;
 
-    private boolean side = true; //true if you want message on right side
-    private boolean hasAudioRecPerm = false;
+    private boolean rightSide = true; //true if you want message on right rightSide
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,14 +198,14 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private boolean sendResponse(String text) {
         if (text.length() == 0)
             return false;
-        chatArrayAdapter.add(new ChatMessage(!side, text));
+        chatArrayAdapter.add(new ChatMessage(!rightSide, text));
         return true;
     }
 
     private boolean sendChatMessage(String text) {
         if (text.length() == 0)
             return false;
-        chatArrayAdapter.add(new ChatMessage(side, text));
+        chatArrayAdapter.add(new ChatMessage(rightSide, text));
         chatText.setText("");
         return true;
     }
