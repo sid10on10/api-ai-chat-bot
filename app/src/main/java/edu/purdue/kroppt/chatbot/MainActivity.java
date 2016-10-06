@@ -120,17 +120,21 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                     sendButton.clearAnimation();
                     sendButton.startAnimation(pop_out_anim);
                     sendButton.setVisibility(View.GONE);
+                    sendButton.setEnabled(false);
                     listenButton.clearAnimation();
                     listenButton.setVisibility(View.VISIBLE);
                     listenButton.startAnimation(pop_in_anim);
+                    listenButton.setEnabled(true);
 
                 } else if (s.length() > 0 && sendButton.getVisibility() == View.GONE) {
                     listenButton.clearAnimation();
                     listenButton.startAnimation(pop_out_anim);
                     listenButton.setVisibility(View.GONE);
+                    listenButton.setEnabled(false);
                     sendButton.clearAnimation();
                     sendButton.setVisibility(View.VISIBLE);
                     sendButton.startAnimation(pop_in_anim);
+                    sendButton.setEnabled(true);
                 }
             }
         });
