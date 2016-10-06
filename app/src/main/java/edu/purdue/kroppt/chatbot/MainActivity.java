@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
@@ -122,6 +123,13 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         aiService.setListener(this);
     }
 
+    private boolean sendResponse(String text) {
+        if (text.length() == 0)
+            return false;
+        chatArrayAdapter.add(new ChatMessage(!side, text));
+        return true;
+    }
+
     private boolean sendChatMessage(String text) {
         if (text.length() == 0)
             return false;
@@ -210,6 +218,14 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     public void onResult(final AIResponse response) { // here process response
         Result result = response.getResult();
+        Log.i(TAG, "Action: " + result.getAction());
+        // process response object
+        sendChatMessage(response.getResult().getResolvedQuery());
+
+        sendResponse(result.getFulfillment().getSpeech());
+
+
+        /**
 
         // Get parameters
         String parameterString = "";
@@ -223,6 +239,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         sendChatMessage("Query:" + result.getResolvedQuery() +
                         "\nAction: " + result.getAction() +
                         "\nParameters: " + parameterString);
+
+        **/
     }
 
     @Override
