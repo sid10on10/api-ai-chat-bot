@@ -17,6 +17,7 @@
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"></ListView>
 
+    <!-- Puts focus on empty layout -->
     <LinearLayout
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -27,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="12"
+        android:weightSum="15"
         android:layout_margin="2dp"
         android:clipToPadding="false">
 
@@ -35,50 +36,37 @@
             android:id="@+id/msg"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="7"
+            android:layout_weight="14"
             android:layout_margin="7dp"
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
             android:hint="@string/text_hint" />
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="3"
-            android:layout_marginBottom="12dp"
-            android:layout_marginTop="7dp"
-            android:text="@string/send" />
-
-        <RelativeLayout
+        <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/gallerylayout"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2">
+            android:layout_weight="1">
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btn_mic"
+                android:visibility="visible"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="7dp"
                 android:layout_marginBottom="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
                 android:src="@android:drawable/ic_btn_speak_now"
-                android:tint="#efefef"
-                android:onClick="listenButtonOnClick" />
+                android:tint="#efefef" />
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btn_send"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="7dp"
                 android:layout_marginBottom="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
-                android:src="@android:drawable/z"
-                android:tint="#efefef"
-                android:onClick="listenButtonOnClick" />
-        </RelativeLayout>
+                android:src="@drawable/ic_send_white_24dp"
+                android:tint="#efefef" />
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

@@ -10,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import ai.api.AIConfiguration;
 import ai.api.AIListener;
@@ -38,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private Button buttonSend;
-    FloatingActionButton listenButton;
+    private FloatingActionButton sendButton;
+    private FloatingActionButton listenButton;
     private AIService aiService;
 
     private boolean side = true; //true if you want message on right side
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonSend = (Button) findViewById(R.id.send);
+        sendButton = (FloatingActionButton) findViewById(R.id.btn_send);
         listView = (ListView) findViewById(R.id.msgview);
         listenButton = (FloatingActionButton) findViewById(R.id.btn_mic);
         chatText = (EditText) findViewById(R.id.msg);
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             }
         }
 
+        /**
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -94,14 +98,69 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 return false;
             }
         });
+        **/
 
-        buttonSend.setOnClickListener(new View.OnClickListener() {
+        chatText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0 && listenButton.getVisibility() == View.GONE) {
+                    sendButton.setVisibility(View.GONE);
+                    listenButton.setVisibility(View.VISIBLE);
+                } else if (s.length() > 0 && sendButton.getVisibility() == View.GONE) {
+                    sendButton.setVisibility(View.VISIBLE);
+                    listenButton.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 sendChatMessage(chatText.getText().toString());
             }
         });
 
+        listenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getParent(),
+                            Manifest.permission.RECORD_AUDIO)) {
+
+                        showExplanation("Permission Needed", "Rationale", Manifest.permission.RECORD_AUDIO,
+                                MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                        // Show an expanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+                    } else {
+                        // No explanation needed, we can request the permission.
+
+                        requestPermission(Manifest.permission.RECORD_AUDIO,
+                                MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                        // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
+                        // app-defined int constant. The callback method gets the
+                        // result of the request (onRequestPermissionsResult).
+                    }
+
+                } else {
+                    aiService.startListening();
+                }
+            }
+        });
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
@@ -136,45 +195,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         chatArrayAdapter.add(new ChatMessage(side, text));
         chatText.setText("");
         return true;
-    }
-
-    public void listenButtonOnClick(final View view) {
-
-        // Permissions code taken from Android Developers resource
-        // https://developer.android.com/training/permissions/requesting.html
-
-        // Supplementary code from examples on
-        // http://stackoverflow.com/questions/35484767/activitycompat-requestpermissions-not-showing-dialog-box
-
-        // Get RECORD_AUDIO permissions.
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.RECORD_AUDIO)) {
-
-                showExplanation("Permission Needed", "Rationale", Manifest.permission.RECORD_AUDIO,
-                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-
-                requestPermission(Manifest.permission.RECORD_AUDIO,
-                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-
-                // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
-                // app-defined int constant. The callback method gets the
-                // result of the request (onRequestPermissionsResult).
-            }
-
-        } else {
-            aiService.startListening();
-        }
     }
 
     private void requestPermission(String permissionName, int permissionRequestCode) {
@@ -245,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     @Override
     public void onError(AIError error) { // here process error
-        sendChatMessage(error.toString());
+        sendResponse(error.toString());
     }
 
     @Override
