@@ -14,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.RECORD_AUDIO)) {
-
                 // to do??
 
                 // Show an expanation to the user *asynchronously* -- don't block
@@ -143,20 +143,24 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-
                 // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
                 // app-defined int constant. The callback method gets the
                 // result of the request (onRequestPermissionsResult).
             }
-        }
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+        } else hasAudioRecPerm = true;
+
+        sendChatMessage("hasAudioRecPerm:"+hasAudioRecPerm);
 
         if (hasAudioRecPerm)
             aiService.startListening();
         else
-            sendChatMessage("Verbal input requires Record Audio permissions.");
+            Toast.makeText(this, "Verbal input requires Record Audio permissions.",
+                Toast.LENGTH_LONG).show();
     }
 
     @Override
