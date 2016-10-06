@@ -1,12 +1,14 @@
 package edu.purdue.kroppt.chatbot;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -65,16 +67,22 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.INTERNET)) {
 
-                // to do??
+                showExplanation("Permission Needed", "Rationale", Manifest.permission.INTERNET,
+                        MY_PERMISSIONS_REQUEST_INTERNET);
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-            }
+            } else {
+                // No explanation needed, we can request the permission.
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.INTERNET},
-                    MY_PERMISSIONS_REQUEST_INTERNET);
+                requestPermission(Manifest.permission.INTERNET,
+                        MY_PERMISSIONS_REQUEST_INTERNET);
+
+                // MY_PERMISSIONS_REQUEST_INTERNET is an
+                // app-defined int constant. The callback method gets the
+                // result of the request (onRequestPermissionsResult).
+            }
         }
 
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -127,40 +135,58 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         // Permissions code taken from Android Developers resource
         // https://developer.android.com/training/permissions/requesting.html
 
+        // Supplementary code from examples on
+        // http://stackoverflow.com/questions/35484767/activitycompat-requestpermissions-not-showing-dialog-box
+
+        // Get RECORD_AUDIO permissions.
+
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.RECORD_AUDIO)) {
-                // to do??
+
+                showExplanation("Permission Needed", "Rationale", Manifest.permission.RECORD_AUDIO,
+                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
 
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
             } else {
-
                 // No explanation needed, we can request the permission.
+
+                requestPermission(Manifest.permission.RECORD_AUDIO,
+                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
 
                 // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
                 // app-defined int constant. The callback method gets the
                 // result of the request (onRequestPermissionsResult).
             }
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-
-        } else hasAudioRecPerm = true;
-
-        sendChatMessage("hasAudioRecPerm:"+hasAudioRecPerm);
-
-        if (hasAudioRecPerm)
+        } else {
             aiService.startListening();
-        else
-            Toast.makeText(this, "Verbal input requires Record Audio permissions.",
-                Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void requestPermission(String permissionName, int permissionRequestCode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permissionName}, permissionRequestCode);
+    }
+
+    private void showExplanation(String title,
+                                 String message,
+                                 final String permission,
+                                 final int permissionRequestCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        requestPermission(permission, permissionRequestCode);
+                    }
+                });
+        builder.create().show();
     }
 
     @Override
@@ -169,12 +195,13 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
-                hasAudioRecPerm = (grantResults.length > 0
+                if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED);
-                // hasAudioRecPerm stores whether Permissions were granted.
+                    // whether Permissions were granted
+                    aiService.startListening();
                 return;
             } case MY_PERMISSIONS_REQUEST_INTERNET: {
-            }default: return;
+            } default: return;
 
             // other 'case' lines to check for other
             // permissions this app might request
