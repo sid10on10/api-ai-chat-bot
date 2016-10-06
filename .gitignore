@@ -44,11 +44,9 @@ captures/
 # Intellij
 *.iws
 *.iml
-.idea/libraries/
+.idea/libraries
 .idea/tasks.xml
 .idea/vcs.xml
-.idea/workspace.xml
-
 .idea/workspace.xml
 
 # Keystore files
