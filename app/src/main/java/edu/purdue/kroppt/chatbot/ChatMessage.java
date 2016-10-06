@@ -5,12 +5,12 @@ package edu.purdue.kroppt.chatbot;
  */
 
 public class ChatMessage {
-    public boolean left;
+    public boolean rightSide;
     public String message;
 
-    public ChatMessage(boolean left, String message) {
+    public ChatMessage(boolean rightSide, String message) {
         super();
-        this.left = left;
+        this.rightSide = rightSide;
         this.message = message;
     }
 }
