@@ -12,8 +12,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import ai.api.AIConfiguration;
+import ai.api.AIListener;
+import ai.api.AIService;
+import ai.api.model.AIError;
+import ai.api.model.AIResponse;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AIListener {
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter chatArrayAdapter;
@@ -76,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
         final AIConfiguration config = new AIConfiguration("937174fa0798485bbe75e8ecc391082f",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
+
+        AIService aiService = AIService.getService(this, config);
+        aiService.setListener(this);
     }
 
     private boolean sendChatMessage() {
@@ -84,5 +91,24 @@ public class MainActivity extends AppCompatActivity {
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
         return true;
+    }
+
+    public void onResult(AIResponse result) { // here process response
+
+    }
+    public void onError(AIError error) { // here process error
+
+    }
+    public void onAudioLevel(float level) { // callback for sound level visualization
+
+    }
+    public void onListeningStarted() { // indicate start listening here
+
+    }
+    public void onListeningCanceled() { // indicate stop listening here
+
+    }
+    public void onListeningFinished() { // indicate stop listening here
+
     }
 }
