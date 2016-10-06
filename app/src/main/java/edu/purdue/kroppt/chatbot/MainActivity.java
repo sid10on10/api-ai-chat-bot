@@ -1,8 +1,12 @@
 package edu.purdue.kroppt.chatbot;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,6 +28,8 @@ import ai.api.model.Result;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
     private static final String TAG = "ChatActivity";
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 12;
+    private static final int MY_PERMISSIONS_REQUEST_INTERNET = 35;
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
@@ -31,7 +37,9 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private Button buttonSend;
     FloatingActionButton listenButton;
     private AIService aiService;
+
     private boolean side = true; //true if you want message on right side
+    private boolean hasAudioRecPerm = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,27 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
 
         listView.setAdapter(chatArrayAdapter);
+
+        // Get INTERNET permission
+
+        while (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.INTERNET)) {
+
+                // to do??
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            }
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.INTERNET},
+                    MY_PERMISSIONS_REQUEST_INTERNET);
+        }
 
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -93,7 +122,59 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     }
 
     public void listenButtonOnClick(final View view) {
-        aiService.startListening();
+
+        // Permissions code taken from Android Developers resource
+        // https://developer.android.com/training/permissions/requesting.html
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.RECORD_AUDIO)) {
+
+                // to do??
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
+                // app-defined int constant. The callback method gets the
+                // result of the request (onRequestPermissionsResult).
+            }
+        }
+
+        if (hasAudioRecPerm)
+            aiService.startListening();
+        else
+            sendChatMessage("Verbal input requires Record Audio permissions.");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                hasAudioRecPerm = (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+                // hasAudioRecPerm stores whether Permissions were granted.
+                return;
+            } case MY_PERMISSIONS_REQUEST_INTERNET: {
+            }default: return;
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     public void onResult(final AIResponse response) { // here process response
