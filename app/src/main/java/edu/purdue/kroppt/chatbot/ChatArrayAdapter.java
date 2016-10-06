@@ -44,7 +44,7 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (chatMessageObj.rightSide) {
             row = inflater.inflate(R.layout.right, parent, false);
-        }else{
+        } else {
             row = inflater.inflate(R.layout.left, parent, false);
         }
         chatText = (TextView) row.findViewById(R.id.msgr);
