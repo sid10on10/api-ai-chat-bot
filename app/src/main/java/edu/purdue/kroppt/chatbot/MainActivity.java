@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText chatText;
     private Button buttonSend;
     FloatingActionButton fab;
-    private boolean side = false;
+    private boolean side = true; //true if you want message on right side
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
-        side = !side;
         return true;
     }
 }
