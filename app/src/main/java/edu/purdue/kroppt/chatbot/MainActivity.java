@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import ai.api.AIConfiguration;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
 
@@ -70,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        final AIConfiguration config = new AIConfiguration("937174fa0798485bbe75e8ecc391082f",
+                AIConfiguration.SupportedLanguages.English,
+                AIConfiguration.RecognitionEngine.System);
     }
 
     private boolean sendChatMessage() {
