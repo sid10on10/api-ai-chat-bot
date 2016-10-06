@@ -15,6 +15,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private FloatingActionButton sendButton;
     private FloatingActionButton listenButton;
     private AIService aiService;
+    private Animation pop_in_anim;
+    private Animation pop_out_anim;
 
     private boolean side = true; //true if you want message on right side
     private boolean hasAudioRecPerm = false;
@@ -57,6 +61,15 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         listView = (ListView) findViewById(R.id.msgview);
         listenButton = (FloatingActionButton) findViewById(R.id.btn_mic);
         chatText = (EditText) findViewById(R.id.msg);
+
+        pop_in_anim = AnimationUtils.loadAnimation(this, R.anim.pop_in);
+        pop_out_anim = AnimationUtils.loadAnimation(this, R.anim.pop_out);
+        sendButton.setAnimation(pop_out_anim);
+        sendButton.setAnimation(pop_in_anim);
+        listenButton.setAnimation(pop_in_anim);
+        listenButton.setAnimation(pop_out_anim);
+        sendButton.clearAnimation();
+        listenButton.clearAnimation();
 
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
 
@@ -113,11 +126,20 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0 && listenButton.getVisibility() == View.GONE) {
+                    sendButton.clearAnimation();
+                    sendButton.startAnimation(pop_out_anim);
                     sendButton.setVisibility(View.GONE);
+                    listenButton.clearAnimation();
                     listenButton.setVisibility(View.VISIBLE);
+                    listenButton.startAnimation(pop_in_anim);
+
                 } else if (s.length() > 0 && sendButton.getVisibility() == View.GONE) {
-                    sendButton.setVisibility(View.VISIBLE);
+                    listenButton.clearAnimation();
+                    listenButton.startAnimation(pop_out_anim);
                     listenButton.setVisibility(View.GONE);
+                    sendButton.clearAnimation();
+                    sendButton.setVisibility(View.VISIBLE);
+                    sendButton.startAnimation(pop_in_anim);
                 }
             }
         });
